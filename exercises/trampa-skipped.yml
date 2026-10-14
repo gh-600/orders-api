@@ -1,0 +1,19 @@
+# EJERCICIO (trampa del skipped). Copia este fichero sobre .github/workflows/plan-gate.yml
+# en una rama de prueba y abre un PR desde una rama que NO empiece por "agent/".
+# Resultado esperado: require-plan sale "skipped" y el ruleset NO bloquea el merge.
+name: Plan Gate
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  require-plan:
+    if: startsWith(github.head_ref, 'agent/')   # ← falla en modo abierto
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Solo se valida en ramas agent/*"

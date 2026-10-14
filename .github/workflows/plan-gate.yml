@@ -1,0 +1,31 @@
+name: Plan Gate
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  require-plan:               # nombre del check: "require-plan" (sin if: a nivel de job)
+    runs-on: ubuntu-latest
+    steps:
+      # La plantilla se lee de la rama BASE: el PR no puede rebajar el listón
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+
+      - name: Validar que la descripción contiene las secciones de la plantilla
+        env:
+          BODY: ${{ github.event.pull_request.body }}   # por env, nunca interpolado en el script
+        run: |
+          missing=0
+          while read -r heading; do
+            if ! grep -qF -- "$heading" <<< "$BODY"; then
+              echo "::error::Falta la sección: $heading"
+              missing=1
+            fi
+          done < <(grep -E '^## ' .github/pull_request_template.md)
+          exit $missing
