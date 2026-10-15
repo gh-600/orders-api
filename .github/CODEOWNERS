@@ -1,7 +1,7 @@
 # El comodín va PRIMERO: en CODEOWNERS gana la última línea que coincide.
 # Sustituye @TU-USUARIO y @TU-REVISOR por cuentas reales con acceso de escritura.
-*            @pmilet
 /src/        @pmilet
 /infra/      @sacrebleu747
 /.github/    @sacrebleu747
 /security/   @sacrebleu747
+*            @pmilet
