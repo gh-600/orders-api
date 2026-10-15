@@ -1,0 +1,35 @@
+# EJERCICIO (corrección). Patrón de job agregador: el ruleset exige SOLO "required-gate",
+# y este falla si cualquier job de needs no terminó en "success" (incluido "skipped").
+name: Required Gate
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  scope-guard:
+    if: startsWith(github.head_ref, 'agent/')
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Validación solo para ramas agent/*"
+
+  gate-build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "build"
+
+  required-gate:
+    needs: [scope-guard, gate-build]
+    if: always()                       # se ejecuta aunque los anteriores fallen o se omitan
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          echo "$RESULTS"
+          echo "$RESULTS" | jq -e 'all(.[]; .result == "success")' \
+            || { echo "::error::Algún job no terminó en success"; exit 1; }
