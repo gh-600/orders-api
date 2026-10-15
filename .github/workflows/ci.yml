@@ -17,7 +17,7 @@ jobs:
           dotnet-version: '9.0.x'
       - run: dotnet build Orders.sln --configuration Release
 
-  test:                       # nombre del check: "test"
+  unit-tests:                 # nombre del check: "unit-tests"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
