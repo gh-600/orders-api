@@ -9,5 +9,6 @@ public class OrderTests
     {
         var order = new Order(42m);
         Assert.Equal(42m, order.Amount);
+        Assert.Equal(OrderStatus.Created, order.Status);
     }
 }
